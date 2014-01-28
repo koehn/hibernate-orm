@@ -23,12 +23,13 @@
  */
 package org.hibernate.jpa.criteria.expression;
 
-import java.io.Serializable;
-
 import org.hibernate.jpa.criteria.AbstractNode;
 import org.hibernate.jpa.criteria.CriteriaBuilderImpl;
 import org.hibernate.jpa.criteria.TupleElementImplementor;
 import org.hibernate.jpa.criteria.ValueHandlerFactory;
+
+import javax.persistence.metamodel.EntityType;
+import java.io.Serializable;
 
 /**
  * TODO : javadoc
@@ -40,6 +41,7 @@ public abstract class AbstractTupleElement<X>
 		implements TupleElementImplementor<X>, Serializable {
 	private final Class originalJavaType;
 	private Class<X> javaType;
+    private EntityType<X> entityType;
 	private String alias;
 	private ValueHandlerFactory.ValueHandler<X> valueHandler;
 
@@ -49,10 +51,21 @@ public abstract class AbstractTupleElement<X>
 		this.javaType = javaType;
 	}
 
-	@Override
+    protected AbstractTupleElement(CriteriaBuilderImpl criteriaBuilder, EntityType<X> entityType) {
+        super( criteriaBuilder );
+        this.originalJavaType = this.javaType = (Class<X>) Object.class;
+        this.entityType = entityType;
+    }
+
+    @Override
 	public Class<X> getJavaType() {
 		return javaType;
 	}
+
+    //@Override
+    public EntityType<X> getEntityType() {
+        return entityType;
+    }
 
 	@SuppressWarnings({ "unchecked" })
 	protected void resetJavaType(Class targetType) {

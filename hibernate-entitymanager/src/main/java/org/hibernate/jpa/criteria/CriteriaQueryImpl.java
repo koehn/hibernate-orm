@@ -24,6 +24,7 @@
 package org.hibernate.jpa.criteria;
 
 import java.io.Serializable;
+import java.lang.Override;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -265,6 +266,11 @@ public class CriteriaQueryImpl<T> extends AbstractNode implements CriteriaQuery<
 	public <U> Subquery<U> subquery(Class<U> subqueryType) {
 		return queryStructure.subquery( subqueryType );
 	}
+
+    //@Override
+    public <U> Subquery<U> subquery(EntityType entityType) {
+        return queryStructure.subquery( entityType );
+    }
 
 	@Override
 	public void validate() {

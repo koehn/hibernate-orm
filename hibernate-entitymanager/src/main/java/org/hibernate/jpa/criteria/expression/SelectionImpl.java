@@ -23,15 +23,16 @@
  */
 package org.hibernate.jpa.criteria.expression;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import javax.persistence.criteria.Selection;
-
 import org.hibernate.jpa.criteria.CriteriaBuilderImpl;
 import org.hibernate.jpa.criteria.ParameterContainer;
 import org.hibernate.jpa.criteria.SelectionImplementor;
 import org.hibernate.jpa.criteria.ValueHandlerFactory;
+
+import javax.persistence.criteria.Selection;
+import javax.persistence.metamodel.EntityType;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The Hibernate implementation of the JPA {@link Selection}
@@ -46,7 +47,11 @@ public abstract class SelectionImpl<X>
 		super( criteriaBuilder, javaType );
 	}
 
-	public Selection<X> alias(String alias) {
+    public SelectionImpl(CriteriaBuilderImpl criteriaBuilder, EntityType<X> entityType) {
+        super( criteriaBuilder, entityType );
+    }
+
+    public Selection<X> alias(String alias) {
 		setAlias( alias );
 		return this;
 	}

@@ -23,29 +23,13 @@
  */
 package org.hibernate.jpa.criteria;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.EntityType;
-
 import org.hibernate.jpa.criteria.compile.RenderingContext;
 import org.hibernate.jpa.criteria.path.RootImpl;
+
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.EntityType;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Models basic query structure.  Used as a delegate in implementing both
@@ -238,10 +222,22 @@ public class QueryStructure<T> implements Serializable {
 	}
 
 	public <U> Subquery<U> subquery(Class<U> subqueryType) {
-		CriteriaSubqueryImpl<U> subquery = new CriteriaSubqueryImpl<U>( criteriaBuilder, subqueryType, owner );
+        EntityType<U> entityType = criteriaBuilder.getEntityManagerFactory()
+                .getMetamodel()
+                .entity( subqueryType );
+        if ( entityType == null ) {
+            throw new IllegalArgumentException( subqueryType + " is not an entity" );
+        }
+		CriteriaSubqueryImpl<U> subquery = new CriteriaSubqueryImpl<U>( criteriaBuilder, entityType, owner );
 		internalGetSubqueries().add( subquery );
 		return subquery;
 	}
+
+    public <U> Subquery<U> subquery(EntityType<U> entityType) {
+        CriteriaSubqueryImpl<U> subquery = new CriteriaSubqueryImpl<U>( criteriaBuilder, entityType, owner );
+        internalGetSubqueries().add( subquery );
+        return subquery;
+    }
 
 	@SuppressWarnings({ "unchecked" })
 	public void render(StringBuilder jpaqlQuery, RenderingContext renderingContext) {

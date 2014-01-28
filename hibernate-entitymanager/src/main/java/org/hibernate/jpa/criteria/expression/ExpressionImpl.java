@@ -23,16 +23,17 @@
  */
 package org.hibernate.jpa.criteria.expression;
 
+import org.hibernate.jpa.criteria.CriteriaBuilderImpl;
+import org.hibernate.jpa.criteria.ExpressionImplementor;
+import org.hibernate.jpa.criteria.expression.function.CastFunction;
+
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.metamodel.EntityType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-
-import org.hibernate.jpa.criteria.CriteriaBuilderImpl;
-import org.hibernate.jpa.criteria.ExpressionImplementor;
-import org.hibernate.jpa.criteria.expression.function.CastFunction;
 
 /**
  * Models an expression in the criteria query language.
@@ -46,7 +47,11 @@ public abstract class ExpressionImpl<T>
 		super( criteriaBuilder, javaType );
 	}
 
-	@Override
+    public ExpressionImpl(CriteriaBuilderImpl criteriaBuilder, EntityType<T> entityType) {
+        super( criteriaBuilder, entityType );
+    }
+
+    @Override
 	@SuppressWarnings({ "unchecked" })
 	public <X> Expression<X> as(Class<X> type) {
 		return type.equals( getJavaType() )

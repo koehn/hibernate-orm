@@ -23,27 +23,16 @@
  */
 package org.hibernate.jpa.criteria;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.CommonAbstractCriteria;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.EntityType;
-
 import org.hibernate.jpa.criteria.compile.RenderingContext;
 import org.hibernate.jpa.criteria.expression.DelegatedExpressionImpl;
 import org.hibernate.jpa.criteria.expression.ExpressionImpl;
 import org.hibernate.jpa.criteria.path.RootImpl;
+
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.EntityType;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The Hibernate implementation of the JPA {@link Subquery} contract.  Mostlty a set of delegation to its internal
@@ -64,7 +53,13 @@ public class CriteriaSubqueryImpl<T> extends ExpressionImpl<T> implements Subque
 		this.queryStructure = new QueryStructure<T>( this, criteriaBuilder );
 	}
 
-	@Override
+    public CriteriaSubqueryImpl(CriteriaBuilderImpl criteriaBuilder, EntityType<T> entityType, CommonAbstractCriteria parent ) {
+        super( criteriaBuilder, entityType );
+        this.parent = parent;
+        this.queryStructure = new QueryStructure<T>( this, criteriaBuilder );
+    }
+
+    @Override
 	public AbstractQuery<?> getParent() {
 		if ( ! AbstractQuery.class.isInstance( parent ) ) {
 			throw new IllegalStateException( "Cannot call getParent on update/delete criterias" );
